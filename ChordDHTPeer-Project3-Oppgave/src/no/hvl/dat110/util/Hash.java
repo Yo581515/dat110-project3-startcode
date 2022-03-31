@@ -50,10 +50,11 @@ public class Hash {
 		// Task: compute the address size of MD5		
 		// get the digest length
 		// compute the number of bits = digest length * 8
-		int bits = bitSize();
+		int bits = bitSize()*8;
 		
 		// compute the address size = 2 ^ number of bits
-		addressSize = BigInteger.valueOf((long)Math.round(Math.pow(2, bits)));
+//		addressSize = BigInteger.valueOf((long)Math.round(Math.pow(2, bits)));
+		addressSize = new BigInteger("2").pow(bits);
 		
 		// return the address size
 		return addressSize;
@@ -70,7 +71,7 @@ public class Hash {
 			e.printStackTrace();
 		} 
 		
-		return digestlen*8;
+		return digestlen;
 	}
 	
 	public static String toHex(byte[] digest) {
