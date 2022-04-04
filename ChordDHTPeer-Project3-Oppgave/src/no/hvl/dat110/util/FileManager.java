@@ -93,7 +93,7 @@ public class FileManager {
 		for (int i = 0; i < numReplicas; i++) {
 			NodeInterface succesor = chordnode.findSuccessor(replicafiles[i]);
 			succesor.addKey(replicafiles[i]);
-			succesor.saveFileContent(filename, hash, bytesOfFile, true);
+			succesor.saveFileContent(filename, replicafiles[i], bytesOfFile, true);
 			counter++;
 		}
 
@@ -121,8 +121,18 @@ public class FileManager {
 		// Task: Given a filename, find all the peers that hold a copy of this file
 
 		// generate the N replicas from the filename by calling createReplicaFiles()
+		createReplicaFiles();
 
 		// it means, iterate over the replicas of the file
+		for (int i = 0; i < numReplicas; i++) {
+
+			NodeInterface s = chordnode.findSuccessor(replicafiles[i]);
+
+			Message m = s.getFilesMetadata(replicafiles[i]);
+
+			succinfo.add(m);
+
+		}
 
 		// for each replica, do findSuccessor(replica) that returns successor s.
 
