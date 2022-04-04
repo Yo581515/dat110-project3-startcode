@@ -25,6 +25,7 @@ public class ChordLookup {
 		this.node = node;
 	}
 
+	//hei git
 	public NodeInterface findSuccessor(BigInteger key) throws RemoteException {
 
 		// ask this node to find the successor of key
