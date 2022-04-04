@@ -17,9 +17,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import no.hvl.dat110.middleware.ChordLookup;
 import no.hvl.dat110.middleware.Message;
-import no.hvl.dat110.middleware.Node;
 import no.hvl.dat110.rpc.interfaces.NodeInterface;
 import no.hvl.dat110.util.Hash;
 
@@ -79,6 +77,10 @@ public class FileManager {
 	public int distributeReplicastoPeers() throws RemoteException {// node.findSuccessor(replica)
 		int counter = 0;
 
+		// modiy
+		Random rnd = new Random();
+		int index = rnd.nextInt(Util.numReplicas - 1);
+
 		// Task1: Given a filename, make replicas and distribute them to all active
 		// peers such that: pred < replica <= peer
 
@@ -91,10 +93,17 @@ public class FileManager {
 		// iterate over the replicas
 
 		for (int i = 0; i < numReplicas; i++) {
-			NodeInterface succesor = chordnode.findSuccessor(replicafiles[i]);
+			NodeInterface succesor;
+			succesor = chordnode.findSuccessor(replicafiles[i]);
 			succesor.addKey(replicafiles[i]);
-			succesor.saveFileContent(filename, replicafiles[i], bytesOfFile, true);
 			counter++;
+			if (index == i) {
+				succesor.saveFileContent(filename, replicafiles[i], bytesOfFile, true);
+
+			} else {
+				succesor.saveFileContent(filename, replicafiles[i], bytesOfFile, false);
+			}
+
 		}
 
 		// for each replica, find its successor by performing findSuccessor(replica)
@@ -153,8 +162,23 @@ public class FileManager {
 	 */
 	public NodeInterface findPrimaryOfItem() {
 
+		NodeInterface primary = null;
+
 		// Task: Given all the active peers of a file (activeNodesforFile()), find which
 		// is holding the primary copy
+
+		for (Message m : getActiveNodesforFile()) {
+
+			if (m.isPrimaryServer()) {
+				BigInteger nodeID = m.getNodeID();
+
+				try {
+					primary = chordnode.findSuccessor(nodeID).getPredecessor();
+				} catch (RemoteException e) {
+				}
+
+			}
+		}
 
 		// iterate over the activeNodesforFile
 
@@ -165,7 +189,7 @@ public class FileManager {
 
 		// return the primary
 
-		return null;
+		return primary;
 	}
 
 	/**
