@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import no.hvl.dat110.middleware.ChordLookup;
 import no.hvl.dat110.middleware.Message;
+import no.hvl.dat110.middleware.Node;
 import no.hvl.dat110.rpc.interfaces.NodeInterface;
 import no.hvl.dat110.util.Hash;
 
@@ -74,7 +76,7 @@ public class FileManager {
 	 * @param bytesOfFile
 	 * @throws RemoteException
 	 */
-	public int distributeReplicastoPeers() throws RemoteException {
+	public int distributeReplicastoPeers() throws RemoteException {// node.findSuccessor(replica)
 		int counter = 0;
 
 		// Task1: Given a filename, make replicas and distribute them to all active
@@ -84,8 +86,16 @@ public class FileManager {
 		// (project 3) on Canvas
 
 		// create replicas of the filename
+		createReplicaFiles();
 
 		// iterate over the replicas
+
+		for (int i = 0; i < numReplicas; i++) {
+			NodeInterface succesor = chordnode.findSuccessor(replicafiles[i]);
+			succesor.addKey(replicafiles[i]);
+			succesor.saveFileContent(filename, hash, bytesOfFile, true);
+			counter++;
+		}
 
 		// for each replica, find its successor by performing findSuccessor(replica)
 
